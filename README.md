@@ -1,11 +1,11 @@
 # Deliberation-on-Priors (Anonymous Submission)
 
 <p align="center">
-  <img src="images/framework.png" alt="Framework Overview" width="700"/>
+  <strong>Deliberation on Priors: Trustworthy Reasoning of Large Language Models on Knowledge Graphs</strong>
 </p>
 
 <p align="center">
-  <strong>Deliberation on Priors: Trustworthy Reasoning of Large Language Models on Knowledge Graphs</strong>
+  <img src="images/framework.png" alt="Framework Overview" width="700"/>
 </p>
 
 This repository contains the source code for our NeurIPS 2025 submission, currently under double-blind review.
