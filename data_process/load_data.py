@@ -4,8 +4,6 @@ import json
 import networkx as nx
 from tqdm import tqdm
 from utils import build_graph, bulid_graph_with_fullrel
-nums_null = 0
-INSTRUCTION="""Please generate a valid relation path that can be helpful for answering the following question: """
 def expand_paths(compressed_paths):
     # 展开路径的辅助函数
     def backtrack(current_path, index, path):
@@ -29,7 +27,7 @@ def expand_paths(compressed_paths):
     return result
 def get_shortest_paths(q_entity: list, a_entity: list, G: nx.DiGraph) -> list:
     """
-    Get all shortest paths between a query entity and an answer entity.
+    Get all shortest paths between a topic entity and an answer entity.
     """
     paths = []
     for q in q_entity:
@@ -62,17 +60,13 @@ def get_ground_path(sample):
     return sample
 
 def get_ground_path_with_entity(sample):
-    global nums_null
     # graph = build_graph(sample["graph"])
     graph = bulid_graph_with_fullrel(sample["graph"])
     paths = get_shortest_paths(sample["q_entity"], sample["a_entity"], graph)
-    if paths == []:
-        nums_null += 1
     sample["ground_paths_with_entity"] = paths
     return sample
 
 def get_ground_path_with_entity_split(graph, q_entity, a_entity):
-    global nums_null
     # graph = build_graph(sample["graph"])
     graph = bulid_graph_with_fullrel(graph)
     paths = get_shortest_paths(q_entity, a_entity, graph)
@@ -110,12 +104,11 @@ def load_data_with_path(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_file_path", type=str, default="/data2/qn/KGQA/datasets/DP-grailqa")
-    parser.add_argument("--output_file_path", type=str, default="/data2/qn/KGQA/datasets/data_0312_fullrel/train_grailqa.jsonl")
+    parser.add_argument("--dataset_file_path", type=str, default=" /path/to/your/datasets/RoG-cwq")
+    parser.add_argument("--output_file_path", type=str, default=" /path/to/your//datasets/train_data_ori.jsonl")
     parser.add_argument("--split", type=str, default="train")
     args = parser.parse_args()
     load_data_with_path(args)
-    print(nums_null)
     
 
     
