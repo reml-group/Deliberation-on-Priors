@@ -10,6 +10,7 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 
 ```bash
 .
+├── config/ 
 ├── images/              # Framework images and figures
 ├── utils/               # Utility functions
 ├── models/              # Core model components
@@ -47,7 +48,7 @@ data/
 - For **MetaQA**, adaddad.
 
 ### 3. Training
-During **Distillation** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
+During ***Distillation*** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
 
 To reproduce our training setup, first clone and set up LLaMA-Factory and configure the environment as follows:
 ```bash
@@ -65,7 +66,28 @@ Then, you can refer to the key configuration we provide under the `config/` dire
 You can refer to these configuration files to run SFT and KTO directly within the LLaMA-Factory framework.
 Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
 
-### 4. 
+### 4. Reasoning
+#### Planning
+In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
+
+To accelerate decoding, we adopt [vLLM](https://github.com/vllm-project/vllm) for efficient batch inference.
+```bash
+CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server --dtype bfloat16 --api-key llama --gpu-memory-utilization 0.9 --tensor-parallel-size 1 --trust-remote-code --port 8000 --model /path/to/your/fine-tuned_model
+```
+
+Then, run the script to perform path generation:
+```bash
+python scripts/path_generation.py \
+    --input_files ./data/test_webqsp.jsonl ./data/test_cwq.jsonl \
+    --output_files ./output/webqsp_paths.jsonl ./output/cwq_paths.jsonl \
+    --api_key llama \
+    --model_name_or_path /path/to/your/fine-tuned_model \
+    --base_url http://localhost:8000/v1
+```
+
+#### Instantiation
+
+#### Introspection
 
 
 
