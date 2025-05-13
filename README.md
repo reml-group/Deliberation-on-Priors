@@ -58,9 +58,9 @@ pip install -e ".[torch,metrics]"
 Then, you can refer to the key configuration we provide under the `config/` directory of this repository:
 
 ```bash
-cp config/dataset_info.json ./LLaMA-Factory/data/dataset_info.json
-cp config/llama3_lora_sft.yaml ./LLaMA-Factory/examples/train_lora/llama3_lora_sft.yaml
-cp config/llama3_lora_kto.yaml ./LLaMA-Factory/examples/train_lora/llama3_lora_kto.yaml
+./config/dataset_info.json
+./config/llama3_lora_sft.yaml
+./config/llama3_lora_kto.yaml
 ```
 You can refer to these configuration files to run SFT and KTO directly within the LLaMA-Factory framework.
 Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
