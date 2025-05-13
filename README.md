@@ -7,8 +7,11 @@
 This repository contains the source code for our NeurIPS 2025 submission, currently under double-blind review.
 
 ## 🛠️ Project Structure
+<details>
+<summary>Click to expand</summary>
+```
 .
-├── images/              # Framework images and figures
+├── assets/              # Framework images and figures
 ├── utils/               # Utility functions
 ├── models/              # Core model components
 ├── data/                # Data loading and preprocessing
@@ -17,6 +20,7 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 ├── main.py              # Entry point script (if applicable)
 ├── requirements.txt     # Dependency list
 └── README.md            # This file
+</details>
 
 ## 🚀 Getting Started
 

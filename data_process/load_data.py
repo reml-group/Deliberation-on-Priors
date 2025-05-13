@@ -105,7 +105,7 @@ def load_data_with_path(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_file_path", type=str, default=" /path/to/your/datasets/RoG-cwq")
-    parser.add_argument("--output_file_path", type=str, default=" /path/to/your//datasets/train_data_ori.jsonl")
+    parser.add_argument("--output_file_path", type=str, default=" /path/to/your/datasets/train_data_ori.jsonl")
     parser.add_argument("--split", type=str, default="train")
     args = parser.parse_args()
     load_data_with_path(args)
