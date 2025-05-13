@@ -8,7 +8,6 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 
 ## 🛠️ Project Structure
 
-
 ```bash
 .
 ├── images/              # Framework images and figures
@@ -45,5 +44,28 @@ data/
 ├── RoG-webqsp/
 └── RoG-cwq/
 ```
+- For **MetaQA**, adaddad.
+
+### 3. Training
+During **Distillation** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
+
+To reproduce our training setup, first clone and set up LLaMA-Factory and configure the environment as follows:
+```bash
+git clone --depth 1 https://github.com/hiyouga/LLaMA-Factory.git
+cd LLaMA-Factory
+pip install -e ".[torch,metrics]"
+```
+Then, you can refer to the key configuration we provide under the `config/` directory of this repository:
+
+```bash
+cp config/dataset_info.json ./LLaMA-Factory/data/dataset_info.json
+cp config/llama3_lora_sft.yaml ./LLaMA-Factory/examples/train_lora/llama3_lora_sft.yaml
+cp config/llama3_lora_kto.yaml ./LLaMA-Factory/examples/train_lora/llama3_lora_kto.yaml
+```
+You can refer to these configuration files to run SFT and KTO directly within the LLaMA-Factory framework.
+Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
+
+### 4. 
+
 
 
