@@ -31,10 +31,6 @@ pip install -r requirements.txt
 ```
 
 ### 2. Dataset Preparation
-We use three benchmark datasets in our experiments: WebQSP, ComplexWebQuestions (CWQ), and MetaQA.
-
-For WebQSP and CWQ, we adopt the same preprocessing protocol as [RoG](https://arxiv.org/abs/2310.01061), and directly use the publicly released datasets: [RoG-WebQSP](https://huggingface.co/datasets/rmanluo/RoG-webqsp "点击查看 HuggingFace 页面") and [RoG-CWQ](https://huggingface.co/datasets/rmanluo/RoG-cwq "点击查看 HuggingFace 页面")
-
 We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQuestions (CWQ)**, and **MetaQA**.
 
 - For **WebQSP** and **CWQ**, we adopt the same preprocessing protocol as previous studies, and directly use the preprocessed datasets released by [RoG](https://arxiv.org/abs/2310.01061). These datasets follow standard subgraph extraction methods established in [prior work](https://github.com/RichardHGL/WSDM2021_NSM/tree/main/preprocessing/Freebase).
@@ -42,10 +38,10 @@ We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQues
   - [RoG-WebQSP](https://huggingface.co/datasets/rmanluo/RoG-webqsp)
   - [RoG-CWQ](https://huggingface.co/datasets/rmanluo/RoG-cwq)
 
-  Please download the datasets and place them under the `datasets/` directory:
+  Please download the datasets and place them under the `data/` directory:
 
 ```bash
-datasets/
+data/
 ├── RoG-webqsp/
 └── RoG-cwq/
 ```
