@@ -82,7 +82,7 @@ Each file specifies task-related settings such as dataset path, learning rate, b
 
 ### 4. Reasoning
 To simplify experiments and clearly separate modules, we conduct the ***Planning*** and ***Instantiation*** stages of reasoning in an offline manner.
-#### Planning
+#### a. Planning
 In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
 
 To accelerate decoding, we adopt [vLLM](https://github.com/vllm-project/vllm) for efficient batch inference.
@@ -100,7 +100,7 @@ python scripts/path_generation.py \
     --base_url http://localhost:8000/v1
 ```
 
-#### Instantiation
+#### b. Instantiation
 The ***Instantiation*** stage takes the generated paths from the previous step as input.
 It instantiates each relation path into concrete knowledge graph triplets using a pre-extracted subgraph, and determines which paths are valid (i.e., successfully grounded) and which are not.
 
@@ -111,7 +111,7 @@ python scripts/instance.py \
   --output_path your/output_file/path
 ```
 
-#### Introspection
+#### c. Introspection
 This stage performs iterative path selection and constraint verification.
 Constraints are extracted once, and the model repeatedly selects and verifies paths until the constraints are satisfied or no paths remain.
 
@@ -124,7 +124,7 @@ python scripts/reasoning.py \
   --api_key ${API_KEY} \
   --base_url "your base url" \
   --input_paths your/input_file/path \
-  --output_dir your/output_folder/file \
+  --output_dir your/output_folder/path \
   --log_prefix "log" \
   --num_repeat 1
 ```
