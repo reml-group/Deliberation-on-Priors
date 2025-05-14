@@ -44,6 +44,6 @@ if __name__ == "__main__":
                         for rel_path in relation_path:
                             if rel_path not in relation_paths:
                                 relation_paths.append(rel_path)
-                data["sft_rel_paths"] = relation_paths
+                data["gen_rel_paths"] = relation_paths
                 file.write(json.dumps(data, ensure_ascii=False) + '\n')
             print(f'✅ Finished writing to {output_path}')

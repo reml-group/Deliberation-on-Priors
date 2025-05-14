@@ -71,6 +71,7 @@ You can refer to these configuration files to run SFT and KTO directly within th
 Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
 
 ### 4. Reasoning
+To simplify experiments and clearly separate modules, we conduct the ***Planning*** and ***Instantiation*** stages of reasoning in an offline manner.
 #### Planning
 In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
 
@@ -79,7 +80,7 @@ To accelerate decoding, we adopt [vLLM](https://github.com/vllm-project/vllm) fo
 CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server --dtype bfloat16 --api-key llama --gpu-memory-utilization 0.9 --tensor-parallel-size 1 --trust-remote-code --port 8000 --model /path/to/your/fine-tuned_model
 ```
 
-Then, run the script to perform path generation:
+Then, run the following script to perform path generation:
 ```bash
 python scripts/path_generation.py \
     --input_files ./data/test_webqsp.jsonl ./data/test_cwq.jsonl \
@@ -90,8 +91,15 @@ python scripts/path_generation.py \
 ```
 
 #### Instantiation
+The Instantiation stage takes the generated paths from the previous step as input.
+It instantiates each relation path into concrete knowledge graph triplets using a pre-extracted subgraph, and determines which paths are valid (i.e., successfully grounded) and which are not.
+
+```bash
+python scripts/instance.py
+```
+The script will output, for each input question:
+- The original predicted paths (gen_rel_paths)
+- Their instantiated versions as triplet sequences (reasoning_tree)
+- A binary list indicating whether each path can be instantiated (is_instance)
 
 #### Introspection
-
-
-
