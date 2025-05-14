@@ -111,12 +111,6 @@ python scripts/instance.py \
   --output_path your/output_file/path
 ```
 
-### 5. Result
-
-<p align="center">
-  <img src="images/result.png" alt="Result" width="700"/>
-</p>
-
 #### c. Introspection
 This stage performs iterative path selection and constraint verification.
 Constraints are extracted once, and the model repeatedly selects and verifies paths until the constraints are satisfied or no paths remain.
@@ -135,6 +129,11 @@ python scripts/reasoning.py \
   --num_repeat 1
 ```
 
+### 5. Result
+
+<p align="center">
+  <img src="images/result.png" alt="Result" width="700"/>
+</p>
 
 ## 📌 Notes
 
