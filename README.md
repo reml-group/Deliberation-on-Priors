@@ -14,16 +14,26 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 
 ```bash
 .
-├── config/ 
-├── images/              # Framework images and figures
-├── utils/               # Utility functions
-├── models/              # Core model components
-├── data/                # Data
-├── data_process/        # Data loading and preprocessing
-├── scripts/             # Shell scripts for running experiments
-├── main.py              # Entry point script (if applicable)
-├── requirements.txt     # Dependency list
-└── README.md            # This file
+├── config/                    # Configuration files for training/inference
+├── data/                      # Input/output data files (JSONL, results, etc.)
+├── data_process/              # Data loading and preprocessing scripts
+│   └── load_data.py
+├── images/                    # Figures (e.g., framework diagram)
+│   └── framework.png
+├── scripts/                   # Main reasoning stage scripts
+│   ├── instance.py            # Instantiation stage
+│   ├── path_generation.py     # Path generation via vLLM
+│   └── reasoning.py           # Introspection stage (path selection & verification)
+├── utils/                     # Common utility functions
+│   ├── common_func.py
+│   ├── create_graph.py
+│   ├── parse.py
+│   ├── prompt_template_list.py
+│   ├── statics_caculate.py
+│   └── __init__.py
+├── LICENSE
+├── README.md
+└── requirements.txt           # Environment dependencies
 ```
 
 ## 🚀 Getting Started
@@ -91,15 +101,39 @@ python scripts/path_generation.py \
 ```
 
 #### Instantiation
-The Instantiation stage takes the generated paths from the previous step as input.
+The ***Instantiation*** stage takes the generated paths from the previous step as input.
 It instantiates each relation path into concrete knowledge graph triplets using a pre-extracted subgraph, and determines which paths are valid (i.e., successfully grounded) and which are not.
 
 ```bash
-python scripts/instance.py
+python scripts/instance.py \
+  --input_path your/input_file/path \
+  --graph_dataset_dir path/to.graph_dataset \
+  --output_path your/output_file/path
 ```
-The script will output, for each input question:
-- The original predicted paths (gen_rel_paths)
-- Their instantiated versions as triplet sequences (reasoning_tree)
-- A binary list indicating whether each path can be instantiated (is_instance)
 
 #### Introspection
+This stage performs iterative path selection and constraint verification.
+Constraints are extracted once, and the model repeatedly selects and verifies paths until the constraints are satisfied or no paths remain.
+
+```bash
+export API_KEY="sk-xxxx"
+```
+```bash
+python scripts/reasoning.py \
+  --model_id "4.1" \
+  --api_key ${API_KEY} \
+  --base_url "your base url" \
+  --input_paths your/input_file/path \
+  --output_dir your/output_folder/file \
+  --log_prefix "log" \
+  --num_repeat 1
+```
+
+
+## 📌 Notes
+
+- This repository is anonymized for double-blind review.  
+- All results can be reproduced using the provided scripts and configuration files.  
+- Please refer to each stage’s section above for detailed instructions.  
+- For any questions during review, clarifications will be made in the rebuttal phase.
+

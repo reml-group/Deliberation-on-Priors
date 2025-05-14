@@ -1,7 +1,7 @@
-str_s = "The helpful relation paths are: {'relation_pat': []"
 import ast
 import re
-
+import json
+from collections import Counter
 def extract_dict_from_str(input_string):
     # 处理被截断的情况：确保字符串末尾正确
     if not input_string.endswith("}"):
@@ -99,3 +99,66 @@ def extract_partial_entity_paths(input_string):
     merged_result = merge_list_of_dicts(result)
 
     return merged_result
+
+def extract_dict_from_string(input_string):
+    """
+    从字符串中提取 JSON 或 Python 格式的字典对象。
+    支持双引号 JSON 和单引号 Python dict 字符串。
+    """
+    # 提取以 { 开头、以 } 结尾的部分
+    match = re.search(r'\{[\s\S]*\}', input_string)
+    if not match:
+        raise ValueError("没有找到 JSON 或字典格式的数据")
+
+    json_str = match.group(0).strip()
+
+    # 优先用 json 解析
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError:
+        pass  # 尝试下一个解析器
+
+    # 尝试用 ast.literal_eval 解析 Python 风格字典
+    try:
+        return ast.literal_eval(json_str)
+    except Exception as e:
+        raise ValueError(f"无法解析为字典：{e}")
+
+def extract_and_parse_lists(input_string):
+    if input_string is None:
+        return [[]]
+    # 使用正则表达式匹配[]括号内的内容
+    pattern = r'\[(.*?)\]'
+    matches = re.findall(pattern, input_string)
+    
+    # 将匹配到的内容解析为列表
+    result = []
+    for match in matches:
+        # 去掉多余的空格，然后使用eval将字符串解析为列表
+        parsed_list = eval('[' + match.strip() + ']')
+        result.append(parsed_list)
+    return result
+def check_sufficient(response: str) -> bool:
+    return "yes" in response.lower()
+
+def extract_paths(response: str):
+    match = re.search(r"\d+", response)  # 只匹配第一个数字
+    return int(match.group()) - 1 if match else None
+
+def extract_number(s, length):
+    match_braces = re.search(r'\{.*?\}', s)
+    if match_braces:
+        content_in_braces = match_braces.group()
+        numbers_in_braces = re.findall(r'\d+', content_in_braces)
+        if numbers_in_braces:
+            return int(numbers_in_braces[0]) - 1
+    else:
+        all_numbers = re.findall(r'\d+', s)
+        all_numbers = [int(num) for num in all_numbers if 0 < int(num) <= length]
+        if all_numbers:
+            number_counts = Counter(all_numbers)
+            max_count = max(number_counts.values())
+            most_common_numbers = [num for num, count in number_counts.items() if count == max_count]
+            return most_common_numbers[0] - 1
+    
+    return None
