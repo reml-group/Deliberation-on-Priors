@@ -59,7 +59,7 @@ data/
 ├── RoG-webqsp/
 └── RoG-cwq/
 ```
-- For **MetaQA**, adaddad.
+- For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing.
 
 ### 3. Training
 During ***Distillation*** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
@@ -110,6 +110,12 @@ python scripts/instance.py \
   --graph_dataset_dir path/to.graph_dataset \
   --output_path your/output_file/path
 ```
+
+### 5. Result
+
+<p align="center">
+  <img src="images/result.png" alt="Result" width="700"/>
+</p>
 
 #### c. Introspection
 This stage performs iterative path selection and constraint verification.
