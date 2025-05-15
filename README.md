@@ -77,7 +77,7 @@ Then, you can refer to the key configuration we provide under the `config/` dire
 ./config/llama3_lora_sft.yaml
 ./config/llama3_lora_kto.yaml
 ```
-You can refer to these configuration files to run SFT and KTO directly within the LLaMA-Factory framework.
+You can refer to these configuration files to run SFT and [KTO](https://arxiv.org/abs/2402.01306) directly within the LLaMA-Factory framework.
 Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
 
 ### 4. Reasoning
@@ -85,7 +85,11 @@ To simplify experiments and clearly separate modules, we conduct the ***Planning
 #### a. Planning
 In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
 
-To accelerate decoding, we adopt [vLLM](https://github.com/vllm-project/vllm) for efficient batch inference.
+🔜 Our fine-tuned model will be released on [Hugging Face](https://huggingface.co/) soon.
+
+We adopt [vLLM](https://github.com/vllm-project/vllm) for fast and efficient decoding during path generation.
+vLLM is a high-throughput LLM inference and serving library developed by the Sky Computing Lab at UC Berkeley, now maintained by a broad open-source community.
+
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server --dtype bfloat16 --api-key llama --gpu-memory-utilization 0.9 --tensor-parallel-size 1 --trust-remote-code --port 8000 --model /path/to/your/fine-tuned_model
 ```
