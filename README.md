@@ -20,10 +20,14 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 │   └── load_data.py
 ├── images/                    # Figures (e.g., framework diagram)
 │   └── framework.png
-├── scripts/                   # Main reasoning stage scripts
+├── reasoning/                 # Main reasoning stage scripts
 │   ├── instance.py            # Instantiation stage
 │   ├── path_generation.py     # Path generation via vLLM
 │   └── reasoning.py           # Introspection stage (path selection & verification)
+├── scripts/                   # Main reasoning stage scripts
+│   ├── data_process.sh        
+│   ├── path_generation.py     # Path generation via vLLM
+│   └── reasoning.py 
 ├── utils/                     # Common utility functions
 │   ├── common_func.py
 │   ├── create_graph.py
@@ -59,6 +63,7 @@ data/
 ├── RoG-webqsp/
 └── RoG-cwq/
 ```
+
 - For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing.
 
 ### 3. Training
