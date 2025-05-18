@@ -56,12 +56,29 @@ We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQues
   - [RoG-WebQSP](https://huggingface.co/datasets/rmanluo/RoG-webqsp)
   - [RoG-CWQ](https://huggingface.co/datasets/rmanluo/RoG-cwq)
 
-  Please download the datasets and place them under the `data/` directory:
+To process the data for both SFT and KTO training, simply run:
+```bash
+bash ./scripts/data_process.sh
+```
+This script performs the following steps for both WebQSP and CWQ:
+	1.	Load and parse the raw subgraph data using the Hugging Face datasets interface
+    → implemented in `data_process/load_data.py`
+	2.	Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
+    → implemented in `data_process/load_data.py`
+	3.	Format SFT training data by converting paths into prompt-response pairs
+    → implemented in `data_process/load_sft_data.py`
+	4.	Generate KTO training data by constructing positive and negative reasoning path samples. Negative paths are generated via path truncation, entity-path swapping, and relation deletion, as targeted perturbations of the original weak supervision data.
+    → implemented in `data_process/load_kto_data.py`
 
+After completion, the following files will be created under the `data/` directory:
 ```bash
 data/
-├── RoG-webqsp/
-└── RoG-cwq/
+├── train_webqsp_with_paths.jsonl     # Intermediate output with extracted paths
+├── train_webqsp_sft.jsonl            # Prompt-response pairs for SFT training
+├── train_webqsp_kto.jsonl            # Positive and negative pairs for KTO
+├── train_cwq_with_paths.jsonl
+├── train_cwq_sft.jsonl
+└── train_cwq_kto.jsonl
 ```
 
 - For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing.

@@ -4,10 +4,10 @@ import argparse
 from tqdm import tqdm
 from utils import read_jsonl, path_generation_template, path_generation_response_template
 
-def generate_path_dict(paths: list, sup_dict: dict = None, k: int = 3):
+def generate_path_dict(paths: list, sup_dict: dict = None, max_path_len: int = 4):
     result = {} if sup_dict is None else sup_dict.copy()
     for path in paths:
-        if len(path) > k:
+        if len(path) > max_path_len:
             continue
         topic_entity = path[0][0]
         if topic_entity not in result:
@@ -33,6 +33,12 @@ if __name__ == "__main__":
         required=True,
         help="Output .jsonl file containing prompt-response pairs for SFT"
     )
+    parser.add_argument(
+        "--max_path_len",
+        type=int,
+        required=True,
+        help="Maximum number of relations allowed in each reasoning path. Paths longer than this will be filtered out."
+    )
     args = parser.parse_args()
 
     input_path = args.input_path
@@ -55,7 +61,7 @@ if __name__ == "__main__":
                         start_entities=data["q_entity"]
                     ),
                     "response": path_generation_response_template.format(
-                        relation_paths=generate_path_dict(data["ground_paths_with_entity"])
+                        relation_paths=generate_path_dict(paths=data["ground_paths_with_entity"], max_path_len=args.max_path_len)
                     )
                 }
                 file.write(json.dumps(sample, ensure_ascii=False) + "\n")

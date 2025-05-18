@@ -98,14 +98,14 @@ def data2jsonl(dataset, output_file_path):
     
 # 给每条数据添加ground_paths
 def load_data_with_path(args):
-    dataset = load_dataset('parquet', data_dir=args.dataset_file_path, split=args.split)
+    dataset = load_dataset(args.hf_dataset_name, split=args.split)
     dataset = dataset.map(get_ground_path_with_entity)
     data2jsonl(dataset, open(args.output_file_path, "w"))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_file_path", type=str, default=" /path/to/your/datasets/RoG-cwq")
-    parser.add_argument("--output_file_path", type=str, default=" /path/to/your/datasets/train_data_ori.jsonl")
+    parser.add_argument("--hf_dataset_name", type=str, default="rmanluo/RoG-cwq")
+    parser.add_argument("--output_file_path", type=str, default="/path/to/your/datasets/train_data_ori.jsonl")
     parser.add_argument("--split", type=str, default="train")
     args = parser.parse_args()
     load_data_with_path(args)
