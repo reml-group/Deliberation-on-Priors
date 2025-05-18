@@ -121,7 +121,7 @@ Then, run the following script to perform path generation:
 ```bash
 python scripts/path_generation.py \
     --input_files ./data/test_webqsp.jsonl ./data/test_cwq.jsonl \
-    --output_files ./output/webqsp_paths.jsonl ./output/cwq_paths.jsonl \
+    --output_files ./data/output/webqsp_paths.jsonl ./data/output/cwq_paths.jsonl \
     --api_key llama \
     --model_name_or_path /path/to/your/fine-tuned_model \
     --base_url http://localhost:8000/v1
