@@ -66,10 +66,8 @@ This script performs the following steps for both WebQSP and CWQ:
     → implemented in `data_process/load_data.py`.
   - Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
     → implemented in `data_process/load_data.py`.
-
   - Format SFT training data by converting paths into prompt-response pairs
     → implemented in `data_process/load_sft_data.py`.
-
   - Generate KTO training data by constructing positive and negative reasoning path samples. Negative paths are generated via path truncation, entity-path swapping, and relation deletion, as targeted perturbations of the original weak supervision data.
     → implemented in `data_process/load_kto_data.py`.
 

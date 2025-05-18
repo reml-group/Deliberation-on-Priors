@@ -1,14 +1,14 @@
 {
-  "kto_train_accepted": {
-  "file_name": "../data/kto/kto_train_accepted.jsonl",
+  "kto_train_cwq": {
+  "file_name": "./data/kto/train_cwq_kto.jsonl",
   "columns": {
     "prompt": "prompt",
     "response": "response",
     "kto_tag": "kto_tag"
     }
   }, 
-  "kto_train_rejected": {
-  "file_name": "../data/kto/kto_train_rejected.jsonl",
+  "kto_train_webqsp": {
+  "file_name": "./data/kto/train_webqsp_kto.jsonl",
   "columns": {
     "prompt": "prompt",
     "response": "response",
@@ -16,21 +16,21 @@
     }
   },
   "metaqa": {
-    "file_name": "../data/metaqa_train.jsonl", 
+    "file_name": "./data/metaqa_train.jsonl", 
     "columns": {
       "prompt": "prompt",
       "response": "response"
     }
   },
   "webqsp": {
-    "file_name": "../data/train_webqsp.jsonl", 
+    "file_name": "./data/train_webqsp_sft.jsonl", 
     "columns": {
       "prompt": "prompt",
       "response": "response"
     }
   },
   "cwq": {
-    "file_name": "../data/train_cwq.jsonl", 
+    "file_name": "./data/train_cwq_sft.jsonl", 
     "columns": {
       "prompt": "prompt",
       "response": "response"
