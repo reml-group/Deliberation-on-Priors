@@ -62,16 +62,15 @@ bash ./scripts/data_process.sh
 ```
 This script performs the following steps for both WebQSP and CWQ:
 
-	1.	Load and parse the raw subgraph data using the Hugging Face datasets interface
+  - Load and parse the raw subgraph data using the Hugging Face datasets interface
+    → implemented in `data_process/load_data.py`.
+  - Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
     → implemented in `data_process/load_data.py`.
 
-	2.	Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
-    → implemented in `data_process/load_data.py`.
-
-	3.	Format SFT training data by converting paths into prompt-response pairs
+  - Format SFT training data by converting paths into prompt-response pairs
     → implemented in `data_process/load_sft_data.py`.
 
-	4.	Generate KTO training data by constructing positive and negative reasoning path samples. Negative paths are generated via path truncation, entity-path swapping, and relation deletion, as targeted perturbations of the original weak supervision data.
+  - Generate KTO training data by constructing positive and negative reasoning path samples. Negative paths are generated via path truncation, entity-path swapping, and relation deletion, as targeted perturbations of the original weak supervision data.
     → implemented in `data_process/load_kto_data.py`.
 
 After completion, the following files will be created under the `data/` directory:
