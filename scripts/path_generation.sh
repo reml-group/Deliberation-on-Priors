@@ -16,7 +16,9 @@ for NAME in "${DATASETS[@]}"; do
   echo "=============================="
 
   INPUT_FILE="./data/test/${NAME}_500.jsonl"
-  PG_OUTPUT="./data/PG_${NAME}_500.jsonl"
+  PG_OUTPUT="./data/PG/${NAME}_500.jsonl"
+
+  mkdir -p "$(dirname "${PG_OUTPUT}")"
 
   # Ensure input exists
   if [ ! -f "${INPUT_FILE}" ]; then

@@ -61,9 +61,9 @@ def instance_kg_tree(start: list, graph: nx.DiGraph, rel_paths: list):
     return reasoning_tree, is_instance
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_path", type=str, default="./data/test_webqsp.jsonl", help="Path to input .jsonl file containing questions and generated paths")
+    parser.add_argument("--input_path", type=str, help="Path to input .jsonl file containing questions and generated paths")
     parser.add_argument("--hf_dataset_name", type=str, default="rmanluo/RoG-cwq")
-    parser.add_argument("--output_path", type=str, default="./data/output_instance.jsonl", help="Path to output .jsonl file to save reasoning trees")
+    parser.add_argument("--output_path", type=str, help="Path to output .jsonl file to save reasoning trees")
     args = parser.parse_args()
 
     data_list = read_jsonl(args.input_path)

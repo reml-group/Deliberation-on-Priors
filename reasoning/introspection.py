@@ -6,11 +6,10 @@ import os
 from tqdm import tqdm
 from utils import path_selection_prompt, verification_prompt, constraint_extraction_prompt, llm_only_answering_prompt
 from utils import *
-def chat_llm(client: OpenAI, model_id, input: str):
+def chat_llm(client: OpenAI, model, input: str):
     system_prompt = """You are an expert in KG reasoning."""
-    model = {"3.5": "gpt-3.5-turbo-0125", "dsv3": "deepseek-chat", "4o": "gpt-4o", "4.1": "gpt-4.1", "r1": "deepseek-r1", "4.0": "gpt-4"}
     response = client.chat.completions.create(
-        model=model[model_id],
+        model=model,
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": input},
@@ -51,37 +50,37 @@ def log_ground_truth(ground_truth):
     log_entry = f"\nGround truth of the question: {ground_truth}\n"
     logging.info(log_entry)  # 记录到日志文件
 
-def answer_trying(client: OpenAI, model_id, question, topic_entities, constraints, path, triplets, ground_truth):
+def answer_trying(client: OpenAI, model, question, topic_entities, constraints, path, triplets, ground_truth):
     output, usage = chat_llm(client=client, 
-                      model_id=model_id, 
+                      model=model, 
                       input=verification_prompt.format(question=question, topic_entities=topic_entities, constraints=constraints, path=path, triplets=triplets))
     log_function_call("answer_trying", {"question": question, "topic_entities": topic_entities, "constraints": constraints, "path": path, "triplets": triplets}, usage, output)
     log_ground_truth(ground_truth)
     return output
 
-def select_path(client: OpenAI, model_id, question, topic_entities, memory, paths):
+def select_path(client: OpenAI, model, question, topic_entities, memory, paths):
     selected_path_answer, usage = chat_llm(client=client, 
-                                    model_id=model_id, 
+                                    model=model, 
                                     input=path_selection_prompt.format(question=question, topic_entities=topic_entities, memory=memory, paths=paths))
     log_function_call("select_path", {"question": question, "topic_entities": topic_entities, "memory": memory, "paths": paths}, usage, selected_path_answer)
     return selected_path_answer
 
-def constraint_extract(client: OpenAI, model_id, question):
+def constraint_extract(client: OpenAI, model, question):
     constraints, usage = chat_llm(client=client, 
-                            model_id=model_id, 
+                            model=model, 
                             input=constraint_extraction_prompt.format(question=question))
     log_function_call("constraint_extract", {"question": question}, usage, constraints)
     # cons = extract_and_parse_lists(constraints)[0]
     return constraints
 
-def llms_only_answering(client: OpenAI, model_id, question, topic_entities, constraints):
+def llms_only_answering(client: OpenAI, model, question, topic_entities, constraints):
     output, usage = chat_llm(client=client, 
-                      model_id=model_id, 
+                      model=model, 
                       input=llm_only_answering_prompt.format(question=question, constraints=constraints))
     log_function_call("llms_only_answering", {"question": question, "topic_entities": topic_entities, "constraints": constraints}, usage, output)
     return output
 
-def reasoning_by_multi_agent(client: OpenAI, model_id, data: list):
+def reasoning_by_multi_agent(client: OpenAI, model, data: list):
     """多智能体迭代推理
     """
     question, topic_entities, paths, full_paths, start_entities, a_entity = data
@@ -94,13 +93,13 @@ def reasoning_by_multi_agent(client: OpenAI, model_id, data: list):
     llm_calls = 0
     constraints = []
     # 提取约束条件
-    constraints = constraint_extract(client, model_id, question)
+    constraints = constraint_extract(client, model, question)
     llm_calls += 1
     if is_only_empty_lists(full_paths):
         log_error("No reasoning tree")
         response = llms_only_answering(
             client=client, 
-            model_id=model_id, 
+            model=model, 
             question=question, 
             topic_entities=topic_entities, 
             constraints=constraints
@@ -114,7 +113,7 @@ def reasoning_by_multi_agent(client: OpenAI, model_id, data: list):
         str_paths = assemble_paths(start_entities, paths)
 
         try:
-            response = select_path(client, model_id, question, topic_entities, memory, str_paths)
+            response = select_path(client, model, question, topic_entities, memory, str_paths)
             selected_path_index = extract_number(response, len(paths))
             llm_calls += 1
         except Exception as e:
@@ -129,7 +128,7 @@ def reasoning_by_multi_agent(client: OpenAI, model_id, data: list):
         triplets.append(full_paths[selected_path_index])
         
         try:
-            ans_response = answer_trying(client, model_id, question, topic_entities, constraints, selected_path, triplets, a_entity)
+            ans_response = answer_trying(client, model, question, topic_entities, constraints, selected_path, triplets, a_entity)
             llm_calls += 1
             test_dict = extract_dict_from_string(ans_response)
         except Exception as e:
@@ -151,7 +150,7 @@ def reasoning_by_multi_agent(client: OpenAI, model_id, data: list):
         selected_path.append(assemble_paths(start_entities, paths)[0].split(':')[-1])
         triplets.append(full_paths[0])
         try:
-            ans_response = answer_trying(client, model_id, question, topic_entities, constraints, selected_path, triplets, a_entity)
+            ans_response = answer_trying(client, model, question, topic_entities, constraints, selected_path, triplets, a_entity)
             llm_calls += 1
             test_dict = extract_dict_from_string(ans_response)
             answer = test_dict.get("answer", [])
@@ -162,92 +161,91 @@ def reasoning_by_multi_agent(client: OpenAI, model_id, data: list):
     return answer, extra_checking_answer, llm_calls
 
 def run_reasoning_pipeline(
-    model_id,
+    model,
     api_key,
     base_url,
-    input_paths,
+    input_path,
     output_dir,
     log_prefix,
     num_repeat=1
 ):
     client = OpenAI(api_key=api_key, base_url=base_url)
 
-    for input_path in input_paths:
-        filename = os.path.splitext(os.path.basename(input_path))[0]
-        datalist = read_jsonl(input_path)
+    filename = os.path.splitext(os.path.basename(input_path))[0]
+    datalist = read_jsonl(input_path)
 
-        for round_num in range(1, num_repeat + 1):
-            # 构造路径
-            result_path = os.path.join(output_dir, f"{filename}_{model_id}_round{round_num}.jsonl")
-            log_path = os.path.join(output_dir, f"{log_prefix}_{filename}_{model_id}_round{round_num}.txt")
+    for round_num in range(1, num_repeat + 1):
+        # 构造路径
+        result_path = os.path.join(output_dir, f"{filename}_{model}_round{round_num}.jsonl")
+        log_path = os.path.join(output_dir, f"{log_prefix}_{filename}_{model}_round{round_num}.txt")
 
-            # 配置日志
-            logging.basicConfig(filename=log_path, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
+        # 配置日志
+        logging.basicConfig(filename=log_path, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
 
-            logging.info(f"========== Start Round {round_num} on {filename} ==========")
-            logging.info(f"Model ID: {model_id}")
-            logging.info(f"Input file: {input_path}")
-            logging.info(f"Output file: {result_path}")
+        logging.info(f"========== Start Round {round_num} on {filename} ==========")
+        logging.info(f"Model ID: {model}")
+        logging.info(f"Input file: {input_path}")
+        logging.info(f"Output file: {result_path}")
 
-            res = []
-            res_without_path = []
-            for index, data in tqdm(enumerate(datalist), total=len(datalist)):
-                logging.info(f"🔥 Processing data index: {index}")
+        res = []
+        res_without_path = []
+        for index, data in tqdm(enumerate(datalist), total=len(datalist)):
+            logging.info(f"🔥 Processing data index: {index}")
 
-                if data.get("ground_rel_paths") == []:
-                    log_error("No ground paths")
-                    continue
+            if data.get("ground_rel_paths") == []:
+                log_error("No ground paths")
+                continue
 
-                try:
-                    answer, extra_checking_answer, llm_calls = reasoning_by_multi_agent(
-                        client=client,
-                        model_id=model_id,
-                        data=process_data(data)
-                    )
-                    if extra_checking_answer == ["No reasoning tree"]:
-                        res_without_path.append({"question": data["question"], "a_entity": data["a_entity"], "answer": answer, "flag": extra_checking_answer, "llm_calls": llm_calls, "hit@1": 0, "hit": 0, "precision": 0.0, "recall": 0.0, "f1": 0})
-                    else:
-                        res.append({
-                            "question": data["question"],
-                            "a_entity": data["a_entity"],
-                            "answer": answer,
-                            "flag": extra_checking_answer,
-                            "llm_calls": llm_calls
-                        })
-                except Exception as e:
-                    log_error(f"Error processing index {index}: {e}")
-                    continue
-                    
-            error = []
-            for data in res:
-                try:
-                    data["hit@1"] = caculate_hit1(data["answer"], data["a_entity"])
-                    data["hit"] = caculate_hit(data["answer"], data["a_entity"])
-                    data["precision"] = caculate_precision(data["answer"], data["a_entity"])
-                    data["recall"] = caculate_recall(data["answer"], data["a_entity"])
-                    data["f1"] = caculate_f1(data["answer"], data["a_entity"])
-                except Exception as e:
-                    error.append(data)
-                    data.update({"hit@1": 0, "hit": 0, "precision": 0, "recall": 0, "f1": 0})
-                    log_error(f"Metric calculation error on index {res.index(data)}: {e}")
+            try:
+                answer, extra_checking_answer, llm_calls = reasoning_by_multi_agent(
+                    client=client,
+                    model=model,
+                    data=process_data(data)
+                )
+                if extra_checking_answer == ["No reasoning tree"]:
+                    res_without_path.append({"question": data["question"], "a_entity": data["a_entity"], "answer": answer, "flag": extra_checking_answer, "llm_calls": llm_calls, "hit@1": 0, "hit": 0, "precision": 0.0, "recall": 0.0, "f1": 0})
+                else:
+                    res.append({
+                        "question": data["question"],
+                        "a_entity": data["a_entity"],
+                        "answer": answer,
+                        "flag": extra_checking_answer,
+                        "llm_calls": llm_calls
+                    })
+            except Exception as e:
+                log_error(f"Error processing index {index}: {e}")
+                continue
+                
+        error = []
+        for data in res:
+            try:
+                data["hit@1"] = caculate_hit1(data["answer"], data["a_entity"])
+                data["hit"] = caculate_hit(data["answer"], data["a_entity"])
+                data["precision"] = caculate_precision(data["answer"], data["a_entity"])
+                data["recall"] = caculate_recall(data["answer"], data["a_entity"])
+                data["f1"] = caculate_f1(data["answer"], data["a_entity"])
+            except Exception as e:
+                error.append(data)
+                data.update({"hit@1": 0, "hit": 0, "precision": 0, "recall": 0, "f1": 0})
+                log_error(f"Metric calculation error on index {res.index(data)}: {e}")
 
-            for data in res_without_path:
-                res.append(data)
-            # 写入结果
-            with open(result_path, "w", encoding='utf-8') as f:
-                for item in res:
-                    f.write(json.dumps(item, ensure_ascii=False) + "\n")
+        for data in res_without_path:
+            res.append(data)
+        # 写入结果
+        with open(result_path, "w", encoding='utf-8') as f:
+            for item in res:
+                f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
-            logging.info(f"✅ Round {round_num} completed. Total: {len(res)}, Errors: {len(error)}")
+        logging.info(f"✅ Round {round_num} completed. Total: {len(res)}, Errors: {len(error)}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--model_id", type=str, default="4.1", help="Model ID to use, e.g., '4.1'")
+    parser.add_argument("--model", type=str, required=True, help="Model name to use in vLLM/OpenAI call, e.g., 'gpt-4.1' or 'llama3.1-8B-Instruct'")
     parser.add_argument("--api_key", type=str, required=True, help="API key")
     parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1", help="vLLM or OpenAI-compatible endpoint base URL")
 
-    parser.add_argument("--input_paths", nargs='+', required=True, help="List of input JSONL files (instantiated reasoning data)")
+    parser.add_argument("--input_path", nargs='+', required=True, help="List of input JSONL files (instantiated reasoning data)")
     parser.add_argument("--output_dir", type=str, default="./output/reasoning_results", help="Directory to save output files")
     parser.add_argument("--log_prefix", type=str, default="log", help="Prefix for log file names")
     parser.add_argument("--num_repeat", type=int, default=1, help="How many times to repeat each reasoning process (for robustness)")
@@ -255,10 +253,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_reasoning_pipeline(
-        model_id=args.model_id,
+        model=args.model,
         api_key=args.api_key,
         base_url=args.base_url,
-        input_paths=args.input_paths,
+        input_path=args.input_path,
         output_dir=args.output_dir,
         log_prefix=args.log_prefix,
         num_repeat=args.num_repeat

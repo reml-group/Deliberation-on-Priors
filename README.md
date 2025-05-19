@@ -21,13 +21,14 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 ├── images/                    # Figures (e.g., framework diagram)
 │   └── framework.png
 ├── reasoning/                 # Main reasoning stage scripts
-│   ├── instance.py            # Instantiation stage
-│   ├── path_generation.py     # Path generation via vLLM
-│   └── reasoning.py           # Introspection stage (path selection & verification)
+│   ├── instantiation.py       # Instantiation stage
+│   ├── introspection.py       # Introspection stage (path selection & verification)
+│   └── path_generation.py     # Path generation via vLLM
 ├── scripts/                   # Main reasoning stage scripts
 │   ├── data_process.sh        
-│   ├── 
-│   └── 
+│   ├── instantiation.sh
+    ├── introspection.sh
+│   └── path_generation.sh
 ├── utils/                     # Common utility functions
 │   ├── common_func.py
 │   ├── create_graph.py
@@ -58,12 +59,12 @@ We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQues
 
 To process the data for both SFT and KTO training, simply run:
 ```bash
-bash ./scripts/data_process.sh
+bash scripts/data_process.sh
 ```
 This script performs the following steps for both WebQSP and CWQ:
 
   - Load and parse the raw subgraph data using the Hugging Face datasets interface
-    → implemented in `data_process/load_data.py`.
+    → implemented in `data_process/load_data.py`(automatically downloads RoG-WebQSP and RoG-CWQ datasets).
   - Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
     → implemented in `data_process/load_data.py`.
   - Format SFT training data by converting paths into prompt-response pairs
@@ -133,7 +134,7 @@ BASE_URL="http://localhost:8000/v1"
 
 Then, run the following script to perform path generation:
 ```bash
-bash ./scripts/run_path_generation.sh
+bash scripts/run_path_generation.sh
 ```
 
 #### b. Instantiation
@@ -141,7 +142,7 @@ The ***Instantiation*** stage takes the generated paths from the previous step a
 It instantiates each relation path into concrete knowledge graph triplets using a pre-extracted subgraph, and determines which paths are valid (i.e., successfully grounded) and which are not.
 
 ```bash
-bash ./scripts/instantiation.sh
+bash scripts/instantiation.sh
 ```
 
 #### c. Introspection
@@ -149,17 +150,15 @@ This stage performs iterative path selection and constraint verification.
 Constraints are extracted once, and the model repeatedly selects and verifies paths until the constraints are satisfied or no paths remain.
 
 ```bash
-export API_KEY="sk-xxxx"
+bash scripts/introspection.sh
 ```
+
+Before running, please make sure to manually configure the following variables at the top of `scripts/introspection.sh`:
+
 ```bash
-python scripts/reasoning.py \
-  --model_id "4.1" \
-  --api_key ${API_KEY} \
-  --base_url "your base url" \
-  --input_paths your/input_file/path \
-  --output_dir your/output_folder/path \
-  --log_prefix "log" \
-  --num_repeat 1
+API_KEY="your_api_key_here"                     # Your OpenAI or vLLM-compatible API key
+MODEL="gpt-4.1"                                 # Model name (e.g., gpt-4.1, gpt-4o)
+BASE_URL="http://localhost:8000/v1"             # Base URL
 ```
 
 ### 5. Result

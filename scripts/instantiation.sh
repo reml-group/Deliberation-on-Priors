@@ -10,9 +10,11 @@ for NAME in "${DATASETS[@]}"; do
   echo "🧩 Instantiating reasoning paths for ${NAME}"
   echo "=============================="
 
-  INPUT_PATH="./data/PG_${NAME}_500.jsonl"   # Path generation 的输出
-  HF_DATASET_NAME="rmanluo/RoG-${NAME}"       # Parquet 子图目录
-  OUTPUT_PATH="./data/instance_${NAME}_500.jsonl"
+  INPUT_PATH="./data/PG/${NAME}_500.jsonl"   # output of path generation
+  HF_DATASET_NAME="rmanluo/RoG-${NAME}"       
+  OUTPUT_PATH="./data/instance/${NAME}_500.jsonl"
+
+  mkdir -p "$(dirname "${OUTPUT_PATH}")"
 
   if [ ! -f "${INPUT_PATH}" ]; then
     echo "❌ Input file not found: ${INPUT_PATH}"
