@@ -26,8 +26,8 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 │   └── reasoning.py           # Introspection stage (path selection & verification)
 ├── scripts/                   # Main reasoning stage scripts
 │   ├── data_process.sh        
-│   ├── path_generation.py     # Path generation via vLLM
-│   └── reasoning.py 
+│   ├── 
+│   └── 
 ├── utils/                     # Common utility functions
 │   ├── common_func.py
 │   ├── create_graph.py
