@@ -159,8 +159,7 @@ bash scripts/instantiation.sh
 > Additionally, using a 500-sample subset keeps experiments more economical while preserving representativeness.
 
 #### c. Introspection
-The ***Introspection*** stage is the core component of our framework.    
-It performs iterative reasoning by combining large language models with constraint-aware path selection.
+The ***Introspection*** stage is the core component of our framework. It performs iterative reasoning by combining large language models with constraint-aware path selection.
 
 Given a set of instantiated candidate paths, the model follows this loop:
 1. **Constraint Extraction**: Constraints are extracted once from the question using an LLM.
@@ -168,8 +167,7 @@ Given a set of instantiated candidate paths, the model follows this loop:
 3. **Constraint Verification**: The selected path is verified by checking whether it satisfies the extracted constraints.
 4. **Feedback and Memory Update**: If verification fails, feedback is recorded and used to inform the next selection round.
 
-This process continues until all constraints are satisfied or no viable paths remain.  
-It simulates a deliberative reasoning process and enables the model to correct itself during inference.
+This process continues until all constraints are satisfied or no viable paths remain. It simulates a deliberative reasoning process and enables the model to correct itself during inference.
 
 ```bash
 bash scripts/introspection.sh
