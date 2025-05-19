@@ -133,7 +133,7 @@ BASE_URL="http://localhost:8000/v1"
 
 Then, run the following script to perform path generation:
 ```bash
-bash scripts/run_path_generation.sh
+bash ./scripts/run_path_generation.sh
 ```
 
 #### b. Instantiation
@@ -141,10 +141,7 @@ The ***Instantiation*** stage takes the generated paths from the previous step a
 It instantiates each relation path into concrete knowledge graph triplets using a pre-extracted subgraph, and determines which paths are valid (i.e., successfully grounded) and which are not.
 
 ```bash
-python scripts/instance.py \
-  --input_path your/input_file/path \
-  --graph_dataset_dir path/to.graph_dataset \
-  --output_path your/output_file/path
+bash ./scripts/instantiation.sh
 ```
 
 #### c. Introspection

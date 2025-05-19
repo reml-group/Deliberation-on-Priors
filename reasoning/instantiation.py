@@ -54,20 +54,20 @@ def instance_kg_tree(start: list, graph: nx.DiGraph, rel_paths: list):
             is_instance[index] = 1
             for p in path:
                 reasoning_path = []
-                for index, rel in enumerate(rel_path):
-                    reasoning_path.append((p[index], rel, p[index+1]))
+                for i, rel in enumerate(rel_path):
+                    reasoning_path.append((p[i], rel, p[i+1]))
                 if reasoning_path not in reasoning_tree:
                     reasoning_tree.append(reasoning_path)
     return reasoning_tree, is_instance
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_path", type=str, default="./data/test_webqsp.jsonl", help="Path to input .jsonl file containing questions and generated paths")
-    parser.add_argument("--graph_dataset_dir", type=str, default="./datasets/RoG-webqsp/data", help="Directory to the processed Freebase subgraph dataset (in Parquet format)")
+    parser.add_argument("--hf_dataset_name", type=str, default="rmanluo/RoG-cwq")
     parser.add_argument("--output_path", type=str, default="./data/output_instance.jsonl", help="Path to output .jsonl file to save reasoning trees")
     args = parser.parse_args()
 
     data_list = read_jsonl(args.input_path)
-    dataset = load_dataset('parquet', data_dir=args.graph_dataset_dir, split="test")
+    dataset = load_dataset(args.hf_dataset_name, split="test")
     output_file_path = args.output_path
 
     dataset_idx = 0
