@@ -43,13 +43,20 @@ Deliberation-on-Priors/
 
 ## 🚀 Getting Started
 
-### 1. Installation
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/reml-group/Deliberation-on-Priors.git
+cd Deliberation-on-Priors
+```
+
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Dataset Preparation
+### 3. Dataset Preparation
 We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQuestions (CWQ)**, and **MetaQA**.
 
 - For **WebQSP** and **CWQ**, we adopt the same preprocessing protocol as previous studies, and directly use the preprocessed datasets released by [RoG](https://arxiv.org/abs/2310.01061). These datasets follow standard subgraph extraction methods established in [prior work](https://github.com/RichardHGL/WSDM2021_NSM/tree/main/preprocessing/Freebase).
@@ -85,7 +92,7 @@ data/
 
 - For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing.
 
-### 3. Training
+### 4. Training
 During ***Distillation*** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
 
 To reproduce our training setup, first clone and set up LLaMA-Factory and configure the environment as follows:
@@ -104,7 +111,7 @@ Then, you can refer to the key configuration we provide under the `config/` dire
 You can refer to these configuration files to run SFT and [KTO](https://arxiv.org/abs/2402.01306) directly within the LLaMA-Factory framework.
 Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
 
-### 4. Reasoning
+### 5. Reasoning
 To simplify experiments and clearly separate modules, we conduct the ***Planning*** and ***Instantiation*** stages of reasoning in an offline manner.
 #### a. Planning
 In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
@@ -181,7 +188,7 @@ MODEL="gpt-4.1"                                 # Model name (e.g., gpt-4.1, gpt
 BASE_URL="api server url"                       # Base URL
 ```
 
-### 5. Result
+### 6. Result
 
 <p align="center">
   <img src="images/result.png" alt="Result" width="700"/>
