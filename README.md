@@ -114,17 +114,26 @@ We adopt [vLLM](https://github.com/vllm-project/vllm) for fast and efficient dec
 vLLM is a high-throughput LLM inference and serving library developed by the Sky Computing Lab at UC Berkeley, now maintained by a broad open-source community.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server --dtype bfloat16 --api-key llama --gpu-memory-utilization 0.9 --tensor-parallel-size 1 --trust-remote-code --port 8000 --model /path/to/your/fine-tuned_model
+CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server \
+  --dtype bfloat16 \
+  --api-key your_api_key_here \
+  --gpu-memory-utilization 0.9 \
+  --tensor-parallel-size 1 \
+  --trust-remote-code \
+  --port 8000 \
+  --model /path/to/your/fine-tuned_model
+```
+
+Before running the script, make sure to fill in the following variables inside `scripts/run_path_generation.sh`:
+```bash
+API_KEY="your_api_key_here"
+MODEL_NAME_OR_PATH="/path/to/your/fine-tuned_model"
+BASE_URL="http://localhost:8000/v1"
 ```
 
 Then, run the following script to perform path generation:
 ```bash
-python scripts/path_generation.py \
-    --input_files ./data/test_webqsp.jsonl ./data/test_cwq.jsonl \
-    --output_files ./data/output/webqsp_paths.jsonl ./data/output/cwq_paths.jsonl \
-    --api_key llama \
-    --model_name_or_path /path/to/your/fine-tuned_model \
-    --base_url http://localhost:8000/v1
+bash scripts/run_path_generation.sh
 ```
 
 #### b. Instantiation
