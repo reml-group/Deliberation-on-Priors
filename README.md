@@ -46,7 +46,7 @@ Deliberation-on-Priors/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/reml-group/Deliberation-on-Priors.git
+git clone https://github.com/QUNING1/Deliberation-on-Priors.git
 cd Deliberation-on-Priors
 ```
 
