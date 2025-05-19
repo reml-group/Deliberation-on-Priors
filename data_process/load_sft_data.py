@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import argparse
 from tqdm import tqdm
 from utils import read_jsonl, path_generation_template, path_generation_response_template

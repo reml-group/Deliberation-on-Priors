@@ -1,6 +1,9 @@
 import argparse
 from datasets import load_dataset
 import json
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import networkx as nx
 from tqdm import tqdm
 from utils import build_graph, bulid_graph_with_fullrel

@@ -3,6 +3,9 @@ import json
 import argparse
 import logging
 import os
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from tqdm import tqdm
 from utils import path_selection_prompt, verification_prompt, constraint_extraction_prompt, llm_only_answering_prompt
 from utils import *
@@ -245,7 +248,7 @@ if __name__ == "__main__":
     parser.add_argument("--api_key", type=str, required=True, help="API key")
     parser.add_argument("--base_url", type=str, default="http://localhost:8000/v1", help="vLLM or OpenAI-compatible endpoint base URL")
 
-    parser.add_argument("--input_path", nargs='+', required=True, help="List of input JSONL files (instantiated reasoning data)")
+    parser.add_argument("--input_path", type=str, required=True, help="input JSONL file (instantiated reasoning data)")
     parser.add_argument("--output_dir", type=str, default="./output/reasoning_results", help="Directory to save output files")
     parser.add_argument("--log_prefix", type=str, default="log", help="Prefix for log file names")
     parser.add_argument("--num_repeat", type=int, default=1, help="How many times to repeat each reasoning process (for robustness)")

@@ -21,7 +21,7 @@ for NAME in "${DATASETS[@]}"; do
     exit 1
   fi
 
-  python scripts/instantiation.py \
+  python resoning/instantiation.py \
     --input_path "${INPUT_PATH}" \
     --hf_dataset_name "${HF_DATASET_NAME}" \
     --output_path "${OUTPUT_PATH}"

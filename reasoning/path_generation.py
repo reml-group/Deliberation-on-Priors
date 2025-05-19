@@ -3,7 +3,8 @@ import argparse
 import json
 from tqdm import tqdm
 from openai import OpenAI
-
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils import extract_dict_from_str, read_jsonl
 from utils import path_generation_template
 

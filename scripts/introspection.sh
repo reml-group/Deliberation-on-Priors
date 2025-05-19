@@ -27,7 +27,7 @@ for NAME in "${DATASETS[@]}"; do
     exit 1
   fi
 
-  python scripts/introspection.py \
+  python resoning/introspection.py \
     --model "${MODEL}" \
     --api_key "${API_KEY}" \
     --base_url "${BASE_URL}" \

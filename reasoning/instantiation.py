@@ -4,6 +4,9 @@ from datasets import load_dataset
 import networkx as nx
 import json
 import argparse
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils import *
 def read_jsonl(file_path):
     data = []

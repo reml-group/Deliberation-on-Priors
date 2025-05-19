@@ -28,7 +28,7 @@ for NAME in "${DATASETS[@]}"; do
 
   # Step 1: Path Generation
   echo "🔍 Generating paths..."
-  python scripts/path_generation.py \
+  python reasoning/path_generation.py \
     --input_files ${INPUT_FILE} \
     --output_files ${PG_OUTPUT} \
     --api_key ${API_KEY} \

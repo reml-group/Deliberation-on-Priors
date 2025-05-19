@@ -13,32 +13,32 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 ## 🛠️ Project Structure
 
 ```bash
-.
-├── config/                    # Configuration files for training/inference
-├── data/                      # Input/output data files (JSONL, results, etc.)
-├── data_process/              # Data loading and preprocessing scripts
-│   └── load_data.py
-├── images/                    # Figures (e.g., framework diagram)
-│   └── framework.png
-├── reasoning/                 # Main reasoning stage scripts
-│   ├── instantiation.py       # Instantiation stage
-│   ├── introspection.py       # Introspection stage (path selection & verification)
-│   └── path_generation.py     # Path generation via vLLM
-├── scripts/                   # Main reasoning stage scripts
-│   ├── data_process.sh        
+Deliberation-on-Priors/
+├── config/                        # Configuration files for training or prompting
+├── data/
+│   ├── instance/                 # Instantiated reasoning trees
+│   ├── PG/                      # Path generation results
+│   └── test/                    # Input questions (e.g., CWQ/WebQSP 500 samples)
+├── data_process/                 # Data preprocessing scripts
+│   ├── load_data.py             # Extract ground_paths_with_entity from subgraphs
+│   ├── load_sft_data.py         # Format data into prompt-response pairs for SFT
+│   └── load_kto_data.py         # Generate KTO (positive/negative) training samples
+├── images/
+│   ├── framework.png            # Framework figure for the paper
+│   └── result.png               # Visualization of experimental results
+├── reasoning/                    # Core reasoning logic
+│   ├── path_generation.py       # Path generation using fine-tuned LLM
+│   ├── instantiation.py         # Triplet instantiation for paths
+│   └── introspection.py         # Iterative path selection & constraint checking
+├── scripts/                      # Shell scripts for full pipeline execution
+│   ├── data_process.sh
+│   ├── path_generation.sh
 │   ├── instantiation.sh
-    ├── introspection.sh
-│   └── path_generation.sh
-├── utils/                     # Common utility functions
-│   ├── common_func.py
-│   ├── create_graph.py
-│   ├── parse.py
-│   ├── prompt_template_list.py
-│   ├── statics_caculate.py
-│   └── __init__.py
+│   └── introspection.sh
+├── utils/                        # Utility functions, prompt templates, metrics
 ├── LICENSE
 ├── README.md
-└── requirements.txt           # Environment dependencies
+└── requirements.txt             # Python dependencies
 ```
 
 ## 🚀 Getting Started
@@ -145,6 +145,17 @@ It instantiates each relation path into concrete knowledge graph triplets using 
 bash scripts/instantiation.sh
 ```
 
+> 📦 **Note on Test Sets**
+>
+> To facilitate quick reproduction and lightweight testing of our reasoning code, we provide two pre-processed test sets under the `data/test/` and `data/PG/` directories:
+>
+> - `data/test/{cwq,webqsp}_500.jsonl`: 500 samples from [RoG](https://arxiv.org/abs/2310.01061) examples that contain at least one valid ground path for inference. Due to limitations in the original RoG subgraphs, some questions lack reachable answer paths.
+> - `data/PG/{cwq,webqsp}_500.jsonl`: Corresponding path generation results obtained using our fine-tuned model (already run through the `scripts/path_generation.sh` script).
+>
+> These test files allow users to directly run the **Instantiation** and **Introspection** stages **without training or deploying** the full path generation model.
+> This enables faster debugging and understanding of our core pipeline logic.
+> This design also keeps experiments more economical while maintaining representativeness.
+
 #### c. Introspection
 This stage performs iterative path selection and constraint verification.
 Constraints are extracted once, and the model repeatedly selects and verifies paths until the constraints are satisfied or no paths remain.
@@ -158,7 +169,7 @@ Before running, please make sure to manually configure the following variables a
 ```bash
 API_KEY="your_api_key_here"                     # Your OpenAI or vLLM-compatible API key
 MODEL="gpt-4.1"                                 # Model name (e.g., gpt-4.1, gpt-4o)
-BASE_URL="http://localhost:8000/v1"             # Base URL
+BASE_URL="api server url"                       # Base URL
 ```
 
 ### 5. Result
