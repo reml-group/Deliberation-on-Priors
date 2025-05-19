@@ -125,7 +125,7 @@ CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server \
   --model /path/to/your/fine-tuned_model
 ```
 
-Before running the script, make sure to fill in the following variables inside `scripts/run_path_generation.sh`:
+Before running the script, make sure to fill in the following variables inside `scripts/path_generation.sh`:
 ```bash
 API_KEY="your_api_key_here"
 MODEL_NAME_OR_PATH="/path/to/your/fine-tuned_model"
@@ -134,7 +134,7 @@ BASE_URL="http://localhost:8000/v1"
 
 Then, run the following script to perform path generation:
 ```bash
-bash scripts/run_path_generation.sh
+bash scripts/path_generation.sh
 ```
 
 #### b. Instantiation
