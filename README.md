@@ -149,16 +149,27 @@ bash scripts/instantiation.sh
 >
 > To facilitate quick reproduction and lightweight testing of our reasoning code, we provide two pre-processed test sets under the `data/test/` and `data/PG/` directories:
 >
-> - `data/test/{cwq,webqsp}_500.jsonl`: 500 samples from [RoG](https://arxiv.org/abs/2310.01061) examples that contain at least one valid ground path for inference. Due to limitations in the original RoG subgraphs, some questions lack reachable answer paths.
+> - `data/test/{cwq,webqsp}_500.jsonl`: A set of 500 test questions, each with at least one valid ground path. We excluded ungroundable questions caused by limitations in RoG’s subgraphs to ensure reliable inference and evaluation.
 > - `data/PG/{cwq,webqsp}_500.jsonl`: Corresponding path generation results obtained using our fine-tuned model (already run through the `scripts/path_generation.sh` script).
 >
 > These test files allow users to directly run the **Instantiation** and **Introspection** stages **without training or deploying** the full path generation model.
-> This enables faster debugging and understanding of our core pipeline logic.
-> This design also keeps experiments more economical while maintaining representativeness.
+>
+> This greatly facilitates faster debugging and exploration of our core reasoning pipeline.
+>
+> Additionally, using a 500-sample subset keeps experiments more economical while preserving representativeness.
 
 #### c. Introspection
-This stage performs iterative path selection and constraint verification.
-Constraints are extracted once, and the model repeatedly selects and verifies paths until the constraints are satisfied or no paths remain.
+The ***Introspection*** stage is the core component of our framework.    
+It performs iterative reasoning by combining large language models with constraint-aware path selection.
+
+Given a set of instantiated candidate paths, the model follows this loop:
+1. **Constraint Extraction**: Constraints are extracted once from the question using an LLM.
+2. **Path Selection**: The model selects the most promising reasoning path based on current memory and constraints.
+3. **Constraint Verification**: The selected path is verified by checking whether it satisfies the extracted constraints.
+4. **Feedback and Memory Update**: If verification fails, feedback is recorded and used to inform the next selection round.
+
+This process continues until all constraints are satisfied or no viable paths remain.  
+It simulates a deliberative reasoning process and enables the model to correct itself during inference.
 
 ```bash
 bash scripts/introspection.sh
