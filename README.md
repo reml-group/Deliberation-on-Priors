@@ -14,26 +14,31 @@ This repository contains the source code for our NeurIPS 2025 submission, curren
 
 ```bash
 Deliberation-on-Priors/
-├── config/                        # Configuration files for training or prompting
+├── config/                      # Configuration files for training or prompting
 ├── data/
-│   ├── instance/                 # Instantiated reasoning trees
+│   ├── metaQA/                  # The MetaQA dataset directly from its original source
+│   ├── instance/                # Instantiated reasoning trees
 │   ├── PG/                      # Path generation results
 │   └── test/                    # Input questions (e.g., CWQ/WebQSP 500 samples)
-├── data_process/                 # Data preprocessing scripts
-│   ├── load_data.py             # Extract ground_paths_with_entity from subgraphs
-│   ├── load_sft_data.py         # Format data into prompt-response pairs for SFT
+├── data_process/                # Data preprocessing scripts
+│   ├── load_data.py             # Extract ground_paths_with_entity from subgraphs(CWQ/WebQSP)
+│   ├── load_metaqa_data.py      # Extract ground_paths_with_entity from subgraphs(MetaQA)
+│   ├── load_sft_data.py         # Format SFT data into prompt-response pairs for SFT
 │   └── load_kto_data.py         # Generate KTO (positive/negative) training samples
 ├── images/
 │   ├── framework.png            # Framework figure for the paper
 │   └── result.png               # Visualization of experimental results
-├── reasoning/                    # Core reasoning logic
+├── reasoning/                   # Core reasoning logic
 │   ├── path_generation.py       # Path generation using fine-tuned LLM
-│   ├── instantiation.py         # Triplet instantiation for paths
+│   ├── instantiation.py         # Triplet instantiation for paths(CWQ/WebQSP)
+│   ├── instantiation_metaqa.py  # Triplet instantiation for paths(MetaQA)
 │   └── introspection.py         # Iterative path selection & constraint checking
-├── scripts/                      # Shell scripts for full pipeline execution
+├── scripts/                     # Shell scripts for full pipeline execution
 │   ├── data_process.sh
+│   ├── data_process_metaqa.sh
 │   ├── path_generation.sh
 │   ├── instantiation.sh
+│   ├── instantiation_metaqa.sh
 │   └── introspection.sh
 ├── utils/                        # Utility functions, prompt templates, metrics
 ├── LICENSE
@@ -59,7 +64,7 @@ pip install -r requirements.txt
 ### 3. Dataset Preparation
 We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQuestions (CWQ)**, and **MetaQA**.
 
-- For **WebQSP** and **CWQ**, we adopt the same preprocessing protocol as previous studies, and directly use the preprocessed datasets released by [RoG](https://arxiv.org/abs/2310.01061). These datasets follow standard subgraph extraction methods established in [prior work](https://github.com/RichardHGL/WSDM2021_NSM/tree/main/preprocessing/Freebase). 
+For **WebQSP** and **CWQ**, we adopt the same preprocessing protocol as previous studies, and directly use the preprocessed datasets released by [RoG](https://arxiv.org/abs/2310.01061). These datasets follow standard subgraph extraction methods established in [prior work](https://github.com/RichardHGL/WSDM2021_NSM/tree/main/preprocessing/Freebase). 
 
   - [RoG-WebQSP](https://huggingface.co/datasets/rmanluo/RoG-webqsp)
   - [RoG-CWQ](https://huggingface.co/datasets/rmanluo/RoG-cwq)
@@ -90,7 +95,10 @@ data/
 └── train_cwq_kto.jsonl
 ```
 
-- For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing.
+For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing. To process the data, simply run:
+```bash
+bash scripts/metaqa_process.sh
+```
 
 ### 4. Training
 During ***Distillation*** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
@@ -118,9 +126,18 @@ In ***Planning*** stage, we use the model fine-tuned during the ***distillation*
 
 🔜 Our fine-tuned model will be released on [Hugging Face](https://huggingface.co/) soon.
 
+📂 Since the model is not yet released, we provide partial path generation results under the `./data/PG/` directory to facilitate quick testing and reproduction.
+
 We adopt [vLLM](https://github.com/vllm-project/vllm) for fast and efficient decoding during path generation.
 vLLM is a high-throughput LLM inference and serving library developed by the Sky Computing Lab at UC Berkeley, now maintained by a broad open-source community.
 
+Install vLLM with `pip` or [from source](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source):
+
+```bash
+pip install vllm
+```
+
+After installation, launch the vLLM OpenAI-compatible API server using the following command:
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server \
   --dtype bfloat16 \
@@ -132,6 +149,11 @@ CUDA_VISIBLE_DEVICES=0 python -m vllm.entrypoints.openai.api_server \
   --model /path/to/your/fine-tuned_model
 ```
 
+Then, run the following script to perform path generation:
+```bash
+bash scripts/path_generation.sh
+```
+
 Before running the script, make sure to fill in the following variables inside `scripts/path_generation.sh`:
 ```bash
 API_KEY="your_api_key_here"
@@ -139,17 +161,18 @@ MODEL_NAME_OR_PATH="/path/to/your/fine-tuned_model"
 BASE_URL="http://localhost:8000/v1"
 ```
 
-Then, run the following script to perform path generation:
-```bash
-bash scripts/path_generation.sh
-```
-
 #### b. Instantiation
 The ***Instantiation*** stage takes the generated paths from the previous step as input.
 It instantiates each relation path into concrete knowledge graph triplets using a pre-extracted subgraph, and determines which paths are valid (i.e., successfully grounded) and which are not.
 
+For **WebQSP** and **CWQ**, simply run:
 ```bash
 bash scripts/instantiation.sh
+```
+
+For **MetaQA**, run:
+```bash
+bash scripts/instantiation_metaqa.sh
 ```
 
 > 📦 **Note on Test Sets**
@@ -158,12 +181,13 @@ bash scripts/instantiation.sh
 >
 > - `data/test/{cwq,webqsp}_500.jsonl`: A set of 500 test questions, each with at least one valid ground path. We excluded ungroundable questions caused by limitations in RoG’s subgraphs to ensure reliable inference and evaluation.
 > - `data/PG/{cwq,webqsp}_500.jsonl`: Corresponding path generation results obtained using our fine-tuned model (already run through the `scripts/path_generation.sh` script).
+> - `data/test/metaqa_600.jsonl`, `data/PG/metaqa_600.jsonl`: For MetaQA, we sample 600 test questions in total — 200 from each of the 1-hop, 2-hop, and 3-hop subsets — ensuring coverage across different reasoning depths. Path generation has also been completed in advance for convenience.
 >
 > These test files allow users to directly run the **Instantiation** and **Introspection** stages **without training or deploying** the full path generation model.
 >
 > This greatly facilitates faster debugging and exploration of our core reasoning pipeline.
 >
-> Additionally, using a 500-sample subset keeps experiments more economical while preserving representativeness.
+> Additionally, using a 500/600-sample subset keeps experiments more economical while preserving representativeness.
 
 #### c. Introspection
 The ***Introspection*** stage is the core component of our framework. It performs iterative reasoning by combining large language models with constraint-aware path selection.
