@@ -62,12 +62,16 @@ pip install -r requirements.txt
 ```
 
 ### 3. Reasoning
+In this section, we present the overall **Deliberation on Priors (DP)** reasoning workflow.
+
 To simplify experiments and clearly separate modules, we conduct the ***Planning*** and ***Instantiation*** stages of reasoning in an offline manner.
+
 #### a. Planning
 In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
 
 > 🔜 Our fine-tuned model will be released on [Hugging Face](https://huggingface.co/) soon.
 > 📂 Since the model is not yet released, we provide partial path generation results under the `./data/PG/` directory to facilitate quick testing and reproduction.
+> 📘 For details on how to fine-tune the model used in this stage, please refer to Dataset Preparation and Training section.
 
 We adopt [vLLM](https://github.com/vllm-project/vllm) for fast and efficient decoding during path generation.
 vLLM is a high-throughput LLM inference and serving library developed by the Sky Computing Lab at UC Berkeley, now maintained by a broad open-source community.
