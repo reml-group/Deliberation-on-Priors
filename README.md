@@ -61,72 +61,13 @@ cd Deliberation-on-Priors
 pip install -r requirements.txt
 ```
 
-### 3. Dataset Preparation
-We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQuestions (CWQ)**, and **MetaQA**.
-
-For **WebQSP** and **CWQ**, we adopt the same preprocessing protocol as previous studies, and directly use the preprocessed datasets released by [RoG](https://arxiv.org/abs/2310.01061). These datasets follow standard subgraph extraction methods established in [prior work](https://github.com/RichardHGL/WSDM2021_NSM/tree/main/preprocessing/Freebase). 
-
-  - [RoG-WebQSP](https://huggingface.co/datasets/rmanluo/RoG-webqsp)
-  - [RoG-CWQ](https://huggingface.co/datasets/rmanluo/RoG-cwq)
-
-To process the data for both SFT and KTO training, simply run:
-```bash
-bash scripts/data_process.sh
-```
-This script performs the following steps for both WebQSP and CWQ:
-
-  - Load and parse the raw subgraph data using the Hugging Face datasets interface
-    → implemented in `data_process/load_data.py`(automatically downloads RoG-WebQSP and RoG-CWQ datasets).
-  - Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
-    → implemented in `data_process/load_data.py`.
-  - Format SFT training data by converting paths into prompt-response pairs
-    → implemented in `data_process/load_sft_data.py`.
-  - Generate KTO training data by constructing positive and negative reasoning path samples. Negative paths are generated via path truncation, entity-path swapping, and relation deletion, as targeted perturbations of the original weak supervision data.
-    → implemented in `data_process/load_kto_data.py`.
-
-After completion, the following files will be created under the `data/` directory:
-```bash
-data/
-├── train_webqsp_with_paths.jsonl     # Intermediate output with extracted paths
-├── train_webqsp_sft.jsonl            # Prompt-response pairs for SFT training
-├── train_webqsp_kto.jsonl            # Positive and negative pairs for KTO
-├── train_cwq_with_paths.jsonl
-├── train_cwq_sft.jsonl
-└── train_cwq_kto.jsonl
-```
-
-For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing. To process the data, simply run:
-```bash
-bash scripts/metaqa_process.sh
-```
-
-### 4. Training
-During ***Distillation*** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
-
-To reproduce our training setup, first clone and set up LLaMA-Factory and configure the environment as follows:
-```bash
-git clone --depth 1 https://github.com/hiyouga/LLaMA-Factory.git
-cd LLaMA-Factory
-pip install -e ".[torch,metrics]"
-```
-Then, you can refer to the key configuration we provide under the `config/` directory of this repository:
-
-```bash
-./config/dataset_info.json
-./config/llama3_lora_sft.yaml
-./config/llama3_lora_kto.yaml
-```
-You can refer to these configuration files to run SFT and [KTO](https://arxiv.org/abs/2402.01306) directly within the LLaMA-Factory framework.
-Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
-
-### 5. Reasoning
+### 3. Reasoning
 To simplify experiments and clearly separate modules, we conduct the ***Planning*** and ***Instantiation*** stages of reasoning in an offline manner.
 #### a. Planning
 In ***Planning*** stage, we use the model fine-tuned during the ***distillation*** stage to generate multi-hop reasoning paths for a given question and topic entities.
 
-🔜 Our fine-tuned model will be released on [Hugging Face](https://huggingface.co/) soon.
-
-📂 Since the model is not yet released, we provide partial path generation results under the `./data/PG/` directory to facilitate quick testing and reproduction.
+> 🔜 Our fine-tuned model will be released on [Hugging Face](https://huggingface.co/) soon.
+> 📂 Since the model is not yet released, we provide partial path generation results under the `./data/PG/` directory to facilitate quick testing and reproduction.
 
 We adopt [vLLM](https://github.com/vllm-project/vllm) for fast and efficient decoding during path generation.
 vLLM is a high-throughput LLM inference and serving library developed by the Sky Computing Lab at UC Berkeley, now maintained by a broad open-source community.
@@ -211,6 +152,64 @@ API_KEY="your_api_key_here"                     # Your OpenAI or vLLM-compatible
 MODEL="gpt-4.1"                                 # Model name (e.g., gpt-4.1, gpt-4o)
 BASE_URL="api server url"                       # Base URL
 ```
+
+### 4. Dataset Preparation
+We use three benchmark datasets in our experiments: **WebQSP**, **ComplexWebQuestions (CWQ)**, and **MetaQA**.
+
+For **WebQSP** and **CWQ**, we adopt the same preprocessing protocol as previous studies, and directly use the preprocessed datasets released by [RoG](https://arxiv.org/abs/2310.01061). These datasets follow standard subgraph extraction methods established in [prior work](https://github.com/RichardHGL/WSDM2021_NSM/tree/main/preprocessing/Freebase). 
+
+  - [RoG-WebQSP](https://huggingface.co/datasets/rmanluo/RoG-webqsp)
+  - [RoG-CWQ](https://huggingface.co/datasets/rmanluo/RoG-cwq)
+
+To process the data for both SFT and KTO training, simply run:
+```bash
+bash scripts/data_process.sh
+```
+This script performs the following steps for both WebQSP and CWQ:
+
+  - Load and parse the raw subgraph data using the Hugging Face datasets interface
+    → implemented in `data_process/load_data.py`(automatically downloads RoG-WebQSP and RoG-CWQ datasets).
+  - Extract reasoning paths (i.e., ground_paths_with_entity) between topic and answer entities
+    → implemented in `data_process/load_data.py`.
+  - Format SFT training data by converting paths into prompt-response pairs
+    → implemented in `data_process/load_sft_data.py`.
+  - Generate KTO training data by constructing positive and negative reasoning path samples. Negative paths are generated via path truncation, entity-path swapping, and relation deletion, as targeted perturbations of the original weak supervision data.
+    → implemented in `data_process/load_kto_data.py`.
+
+After completion, the following files will be created under the `data/` directory:
+```bash
+data/
+├── train_webqsp_with_paths.jsonl     # Intermediate output with extracted paths
+├── train_webqsp_sft.jsonl            # Prompt-response pairs for SFT training
+├── train_webqsp_kto.jsonl            # Positive and negative pairs for KTO
+├── train_cwq_with_paths.jsonl
+├── train_cwq_sft.jsonl
+└── train_cwq_kto.jsonl
+```
+
+For **MetaQA**, we load the dataset directly from its original source and apply our own preprocessing. To process the data, simply run:
+```bash
+bash scripts/metaqa_process.sh
+```
+
+### 5. Training
+During ***Distillation*** stage, our model is implemented and trained using the [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory)framework — a clean, modular, and extensible framework for fine-tuning large language models.
+
+To reproduce our training setup, first clone and set up LLaMA-Factory and configure the environment as follows:
+```bash
+git clone --depth 1 https://github.com/hiyouga/LLaMA-Factory.git
+cd LLaMA-Factory
+pip install -e ".[torch,metrics]"
+```
+Then, you can refer to the key configuration we provide under the `config/` directory of this repository:
+
+```bash
+./config/dataset_info.json
+./config/llama3_lora_sft.yaml
+./config/llama3_lora_kto.yaml
+```
+You can refer to these configuration files to run SFT and [KTO](https://arxiv.org/abs/2402.01306) directly within the LLaMA-Factory framework.
+Each file specifies task-related settings such as dataset path, learning rate, batch size, LoRA parameters, etc.
 
 ### 6. Result
 
