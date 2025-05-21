@@ -8,7 +8,6 @@
   <img src="images/framework.png" alt="Framework Overview" width="700"/>
 </p>
 
-This repository contains the source code for our NeurIPS 2025 submission, currently under double-blind review.
 
 ## 🛠️ Project Structure
 
@@ -222,11 +221,3 @@ Each file specifies task-related settings such as dataset path, learning rate, b
 <p align="center">
   <img src="images/result.png" alt="Result" width="700"/>
 </p>
-
-## 📌 Notes
-
-- This repository is anonymized for double-blind review.  
-- All results can be reproduced using the provided scripts and configuration files.  
-- Please refer to each stage’s section above for detailed instructions.  
-- For any questions during review, clarifications will be made in the rebuttal phase.
-
