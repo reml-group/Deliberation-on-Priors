@@ -1,4 +1,4 @@
-# Deliberation-on-Priors (Anonymous Submission)
+# Deliberation-on-Priors (DP)
 
 <p align="center">
   <strong>Deliberation on Priors: Trustworthy Reasoning of Large Language Models on Knowledge Graphs</strong>
