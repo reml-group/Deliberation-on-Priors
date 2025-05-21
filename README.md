@@ -61,7 +61,7 @@ cd Deliberation-on-Priors
 pip install -r requirements.txt
 ```
 
-### 3. Reasoning
+### 3. Reasoning on KGs
 In this section, we present the overall **Deliberation on Priors (DP)** reasoning workflow.
 
 To simplify experiments and clearly separate modules, we conduct the ***Planning*** and ***Instantiation*** stages of reasoning in an offline manner.
