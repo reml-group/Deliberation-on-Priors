@@ -221,3 +221,23 @@ Each file specifies task-related settings such as dataset path, learning rate, b
 <p align="center">
   <img src="images/result.png" alt="Result" width="700"/>
 </p>
+
+## :bookmark_tabs: Citation
+
+```bibtex
+@misc{ma2025dp,
+      title={Deliberation on Priors: Trustworthy Reasoning of Large Language Models on Knowledge Graphs}, 
+      author={Jie Ma and Ning Qu and Zhitao Gao and Rui Xing and Jun Liu and Hongbin Pei and Jiang Xie and Linyun Song and Pinghui Wang and Jing Tao and Zhou Su},
+      year={2025},
+      eprint={2505.15210},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2505.15210}, 
+}
+@inproceedings{ma2025debate,
+  title={Debate on graph: a flexible and reliable reasoning framework for large language models},
+  author={Ma, Jie and Gao, Zhitao and Chai, Qi and Sun, Wangchun and Wang, Pinghui and Pei, Hongbin and Tao, Jing and Song, Lingyun and Liu, Jun and Zhang, Chen and others},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  pages={24768--24776},
+  year={2025}
+}
